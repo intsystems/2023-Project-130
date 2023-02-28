@@ -24,7 +24,7 @@
 Abstract
 ========
 
-Purus sit amet luctus venenatis lectus magna fringilla. Condimentum id venenatis a condimentum vitae sapien. Auctor neque vitae tempus quam pellentesque nec nam aliquam. Eget egestas purus viverra accumsan in. Nam aliquam sem et tortor. Donec et odio pellentesque diam volutpat commodo. Odio pellentesque diam volutpat commodo sed egestas. Sit amet dictum sit amet justo. Pellentesque sit amet porttitor eget. Imperdiet sed euismod nisi porta lorem mollis aliquam ut. Quis varius quam quisque id diam vel quam elementum. Ornare lectus sit amet est placerat in. Vulputate dignissim suspendisse in est ante. Elit sed vulputate mi sit amet mauris. Egestas sed tempus urna et pharetra pharetra. Viverra tellus in hac habitasse platea dictumst vestibulum rhoncus.
+Nowadays, new scientific terms appear every day. It is necessary to learn how to extract them in the collection of documents. Doing it manually is long and expensive, because you need to attract highly specialized specialists. This article discusses two solutions to this problem: the collocation highlighting method (TopMine) in combination with the modular technology of thematic modeling (using the BigARTM library) and modern methods based on neural network models of the language. These two methods have not been compared before.
 
 Research publications
 ===============================
