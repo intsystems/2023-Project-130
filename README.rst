@@ -24,7 +24,7 @@
 Abstract
 ========
 
-Nowadays, new scientific terms appear every day. It is necessary to learn how to extract them in the collection of documents. Doing it manually is long and expensive, because you need to attract highly specialized specialists. This article discusses the problem of automatic term allocation. To solve it  the collocation allocation method (TopMine) in combination with the modular technology of thematic modeling (using the BigARTM library) and modern methods based on neural network models of the language are used. These two methods have not been compared before.
+Nowadays, new scientific terms appear every day. It is necessary to learn how to extract them in the collection of documents. Doing it manually is long and expensive, because you need to attract highly specialized specialists. This article discusses the problem of automatic term extraction. To solve it  the collocation allocation method (TopMine) in combination with the modular technology of thematic modeling (using the BigARTM library) and modern methods based on neural network models of the language are used. These two methods have not been compared before.
 
 Research publications
 ===============================
