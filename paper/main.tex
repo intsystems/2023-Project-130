@@ -1,158 +1,64 @@
-\documentclass{article}
-\usepackage{arxiv}
+\documentclass[a4paper, 12pt]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[english, russian]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{url}
-\usepackage{booktabs}
-\usepackage{amsfonts}
-\usepackage{nicefrac}
-\usepackage{microtype}
-\usepackage{lipsum}
-\usepackage{graphicx}
-\usepackage{natbib}
-\usepackage{doi}
+\input{preamble.tex}
+\renewcommand{\abstractname}{Аннотация}
 
+\title{Автоматическое выделение терминов для тематического моделирования}
 
-
-\title{A template for the \emph{arxiv} style}
-
-\author{ David S.~Hippocampus\thanks{Use footnote for providing further
-		information about author (webpage, alternative
-		address)---\emph{not} for acknowledging funding agencies.} \\
-	Department of Computer Science\\
-	Cranberry-Lemon University\\
-	Pittsburgh, PA 15213 \\
-	\texttt{hippo@cs.cranberry-lemon.edu} \\
-	%% examples of more authors
-	\And
-	Elias D.~Striatum \\
-	Department of Electrical Engineering\\
-	Mount-Sheikh University\\
-	Santa Narimana, Levand \\
-	\texttt{stariate@ee.mount-sheikh.edu} \\
-	%% \AND
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
+\author{
+	  Никитина Мария \\
+	\texttt{nikitina.mariia@phystech.edu} \\
 }
-\date{}
-
-\renewcommand{\shorttitle}{\textit{arXiv} Template}
-
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% $ pdfinfo template.pdf
-\hypersetup{
-pdftitle={A template for the arxiv style},
-pdfsubject={q-bio.NC, q-bio.QM},
-pdfauthor={David S.~Hippocampus, Elias D.~Striatum},
-pdfkeywords={First keyword, Second keyword, More},
-}
+\date{\today}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-	\lipsum[1]
+В настоящее время каждый день появляются новые научные термины. Необходимо научиться находить их в коллекции документов. Делать это вручную долго и дорого, потому что нужно привлекать узкоспециализированных специалистов. В данной статье рассматриваются два решения этой проблемы: метод выделения коллокаций (TopMine) в сочетании с модульной технологией тематического моделирования (с использованием библиотеки BigARTM) и современные методы, основанные на нейросетевых моделях языка. Эти два решения ранее не сравнивались.
 \end{abstract}
 
+\keywords{тематическое моделирование \and TopMine \and BigARTM \and выделение коллокаций}
 
-\keywords{First keyword \and Second keyword \and More}
+\section{Введение}
 
-\section{Introduction}
-\lipsum[2]
-\lipsum[3]
+        \textit{Тематическое моделирование} -- это технология обработки естественного языка, направленная на определение тем, к которым относится текстовый документ из коллекции, и какие слова каждую тему образуют. Иначе говоря, тематическая модель осуществляет \textit{мягкую кластеризацию}, выбирая для документа кластеры-темы.
 
-\section{Headings: first level}
-\label{sec:headings}
+        \textit{Вероятностная тематическая модель} определяет вероятности тем в каждом документе и вероятности слов в каждой теме. Большим отличием такой модели от глубоких нейронных сетей типа BERT \citep{bert} или GPT-3 \citep{Brown2020LanguageMA} является простота организации и свойство интерпретируемости в ущерб качеству предсказания вероятности появления слов в документе. Векторное представление тяжёлой нейросети всё ещё не удалось интерпретировать, в то время как тематический эмбединг -- это вектор вероятностей тем.
 
-\lipsum[4] See Section \ref{sec:headings}.
+        Основной задачей и новизной данной статьи является сравнение этих двух подходов. Нейросеть использована готовая. 
+        % Здесь нужно вставить, какую нейросеть используем.
+        Для построения же тематической модели требуется составление \textit{регуляризаторов} -- критериев, учитывающих специфические особенности данных или предметной области, от подбора которых значительно зависит качество определения основных тем документов (\textit{Аддитивная регуляризация тематических моделей, ARTM}). К основному алгоритму регуляризаторы подключаются как модули с помощью библиотеки BigARTM \citep{Vorontsov2015} с открытым кодом.
 
-\subsection{Headings: second level}
-\lipsum[5]
-\begin{equation}
-	\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
-\end{equation}
+        Перед выполнением кластеризации необходимо выделить из коллекции документов ключевые слова и словосочетания и отбросить те, что не несут основной смысловой нагрузки. Поиск составных терминов является нетривиальной и трудоёмкой задачей. Для её решения используется метод поиска коллокаций TopMine, использующий информацию о частоте и совстречаемости слов в коллекции \citep{shatalov2019}.
 
-\subsubsection{Headings: third level}
-\lipsum[6]
+        % Ещё какая-то информация про датасеты
 
-\paragraph{Paragraph}
-\lipsum[7]
+        С учётом интерпретируемости и простоты тематическая модель может стать хорошей заменой нейросети. Предшествующие исследования предлагаемого подхода показали хорошие результаты как по полноте, так и по вычислительной эффективности. Однако они до сих пор не сравнивались с нейросетевыми моделями. Важно понять, насколько хорошо тематическая модель выполняет рассчитанную под неё задачу по сравнению со сложной нейронной сетью.
 
+\section{Постановка задачи}
+        Задача называется \textit{корректно поставленной} по Адамару, если её решение существует, единственно и устойчиво. В общем случае построение тематической модели -- некорректно поставленная задача, её нужно дополнить регуляризаторами. В практических задачах автоматической обработки текстов существует очень много критериев и ограничений.
 
+        Пусть $p_{\omega d}$ -- вероятность появления терма $\omega$ в документе $d$, $\phi_{\omega t}$ -- вероятность того, что терм $\omega$ относится к теме $t$, $\theta_{td}$ -- вероятность встречи темы $t$ в документе $d$. Тогда $P = (p_{\omega d})_{W \times D}$ -- матрица частот термов в документах, $\Phi = (\phi_{\omega t})_{W \times T}$ -- матрица термов тем, $\Theta = (\theta_{td})_{T \times D}$ -- матрица тем документов. $W$, $D$, $T$ -- множества всех термов, документов и тем соответственно.
+       
+        Аддитивная регуляризация тематических моделей основана на максимизации логарифма правдоподобия и регуляризаторов $R_i(\Phi, \Theta)$ с неотрицательными коэффициентами регуляризации $\tau_i$, $i = 1, ..., k$ \citep{vorontsov2020}:
+        \begin{equation}
+            \sum\limits_{d \in D}\sum\limits_{w \in d}\ln\sum\limits_{t \in T}\phi_{\omega t}\theta_{td} + R(\Phi, \Theta) \to \max\limits_{\Phi, \Theta}; ~~~~~ R(\Phi, \Theta) = \sum\limits_{i = 1}^k\tau_iR_i(\Phi, \Theta);
+        \end{equation}
+        при ограничениях неотрицательности и нормировки:
+        \begin{equation}
+            \sum\limits_{w \in W}\phi_{\omega t} = 1; ~~~ \phi_{\omega t} \geq 0; ~~~~~ \sum\limits_{t \in T}\theta_{td} = 1; ~~~ \theta_{td} \geq 0.
+        \end{equation}
 
-\section{Examples of citations, figures, tables, references}
-\label{sec:others}
+        Решается задача нахождения разложения $P = \Phi\Theta$ при достижении максимума. Для её решения применяется EM-алгоритм. Таким образом, основной проблемой становится поиск регуляризаторов $R_i(\Phi, \Theta)$, подходящих под нашу задачу поиска терминов в коллекции документов.
 
-\subsection{Citations}
-Citations use \verb+natbib+. The documentation may be found at
-\begin{center}
-	\url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
+\section{Вычислительный эксперимент}
 
-Here is an example usage of the two main commands (\verb+citet+ and \verb+citep+): Some people thought a thing \citep{kour2014real, hadash2018estimate} but other people thought something else \citep{kour2014fast}. Many people have speculated that if we knew exactly why \citet{kour2014fast} thought this\dots
+\section{Анализ ошибки}
 
-\subsection{Figures}
-\lipsum[10]
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
-\lipsum[11]
+\section{Заключение}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{../figures/log_reg_cs_exp.eps}
-	\caption{Sample figure caption.}
-	\label{fig:fig1}
-\end{figure}
-
-\subsection{Tables}
-See awesome Table~\ref{tab:table}.
-
-The documentation for \verb+booktabs+ (`Publication quality tables in LaTeX') is available from:
-\begin{center}
-	\url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-
-
-\begin{table}
-	\caption{Sample table title}
-	\centering
-	\begin{tabular}{lll}
-		\toprule
-		\multicolumn{2}{c}{Part}                   \\
-		\cmidrule(r){1-2}
-		Name     & Description     & Size ($\mu$m) \\
-		\midrule
-		Dendrite & Input terminal  & $\sim$100     \\
-		Axon     & Output terminal & $\sim$10      \\
-		Soma     & Cell body       & up to $10^6$  \\
-		\bottomrule
-	\end{tabular}
-	\label{tab:table}
-\end{table}
-
-\subsection{Lists}
-\begin{itemize}
-	\item Lorem ipsum dolor sit amet
-	\item consectetur adipiscing elit.
-	\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
-\end{itemize}
-
-
-\bibliographystyle{unsrtnat}
-\bibliography{references}
+\bibliographystyle{plain}
+\bibliography{Nikitina2023.bib}
 
 \end{document}
