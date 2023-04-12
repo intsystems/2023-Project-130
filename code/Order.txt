@@ -1,1 +1,1 @@
-Dataset -> TopMine_Stemming -> BigARTM
+Dataset -> TopMine_Stemming -> BigARTM_Results
