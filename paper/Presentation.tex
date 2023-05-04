@@ -17,7 +17,7 @@
 Консультант: Потапова Полина
 
 Научный руководитель: д.ф.-м.н. Воронцов Константин Вячеславович}
-\date{6 апреля 2023 года} 
+\date{4 мая 2023 года} 
 % Создание заглавной страницы
 \frame{\titlepage} 
 
@@ -158,30 +158,44 @@ paper present evalu system show system success retriev identif number approxim p
 \end{block}
 \end{frame}
 
+\begin{frame}{BERT}
+Для сравнения используется предобученная модель BERT из библиотеки transformers.
+\begin{table}[]
+\caption{Пример данных для обучения}
+\begin{tabular}{|l|l|l|}
+\hline
+sentence\_id & words          & labels \\ \hline
+1            & customer       & O      \\ \hline
+1            & service        & O      \\ \hline
+1            & allowing       & O      \\ \hline
+1            & users          & O      \\ \hline
+1            & retrieve       & O      \\ \hline
+1            & identification & B      \\ \hline
+1            & numbers        & O      \\ \hline
+\end{tabular}
+\end{table}
+Пометка 'O' --- слово не является термином.
+
+Пометка 'B' --- слово является термином.
+\end{frame}
+
 \begin{frame}{Результаты}
 \begin{table}[ht]
-    \caption{Результаты работы алгоритма TopMine}
+    \caption{Результаты работы алгоритмов}
     \label{table:TopMine}
     \centering\medskip
-    \begin{tabular}{|l|l|l|}
+    \begin{tabular}{|l|l|l|l|}
     \hline
-        Precision & Recall & F1 \\ \hline
-        0.063 & 0.946 & 0.117 \\
+        & Precision & Recall & F1 \\ \hline
+        TopMine & 0.063 & 0.946 & 0.117 \\ \hline
+        Вероятностная модель & 0.426 & 0.281 & 0.338 \\ \hline
+        BERT & 0.636 & 0.732 & 0.681 \\
         \hline
     \end{tabular}
 \end{table}
-
-\begin{table}[ht]
-    \caption{Лучший результат работы алгоритма}
-    \label{table:TopMine}
-    \centering\medskip
-    \begin{tabular}{|l|l|l|}
-    \hline
-        Precision & Recall & F1 \\ \hline
-        0.413 & 0.286 & 0.338 \\
-        \hline
-    \end{tabular}
-\end{table}
+\begin{block}{Выводы}
+Вероятностная модель хорошо работает в сравнении с TopMine, но BERT показывает результат лучше. Однако недостатком нейронной сети является большое потребление оперативной памяти и памяти графического процессора. Также, в отличие от вероятностной модели, она неинтерпретируема.
+\end{block}
 \end{frame}
 
 \begin{frame}{Дальнейшие задачи}
